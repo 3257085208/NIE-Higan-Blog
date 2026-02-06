@@ -246,17 +246,16 @@ def build_post_page(
   <link rel="icon" href="https://img.i8-mc.cn/file/V4PF4kwS.ico">
 
   <link rel="dns-prefetch" href="//npm.elemecdn.com">
-  <link rel="dns-prefetch" href="//cdn.staticfile.org">
-  <link rel="dns-prefetch" href="//fonts.loli.net">
-  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//cdn.staticfile.org.i8-mc.cn">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net.i8-mc.cn">
 
-  <link rel="preload" href="https://cdn.staticfile.org/github-markdown-css/5.2.0/github-markdown-light.min.css" as="style">
-  <link rel="preload" href="https://cdn.staticfile.org/font-awesome/6.4.2/css/all.min.css" as="style">
+  <link rel="preload" href="https://cdn.staticfile.org.i8-mc.cn/github-markdown-css/5.2.0/github-markdown-light.min.css" as="style">
+  <link rel="preload" href="https://cdn.staticfile.org.i8-mc.cn/font-awesome/6.4.2/css/all.min.css" as="style">
 
-  <link rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/5.2.0/github-markdown-light.min.css">
-  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://fonts.loli.net/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.css" />
+  <link rel="stylesheet" href="https://cdn.staticfile.org.i8-mc.cn/github-markdown-css/5.2.0/github-markdown-light.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org.i8-mc.cn/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://blog-assets.i8-mc.cn/nunito/nunito.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net.i8-mc.cn/npm/@waline/client@v2/dist/waline.css" />
 
 {style_block}
 </head>
@@ -334,8 +333,8 @@ def build_post_page(
   <div class="float-btn" onclick="window.scrollTo({{top:0, behavior:'smooth'}})" title="顶部"><i class="fa-solid fa-arrow-up"></i></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@waline/client@v2/dist/waline.js"></script>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" onerror="console.warn('busuanzi load failed')"></script>
+<script src="https://cdn.jsdelivr.net.i8-mc.cn/npm/@waline/client@v2/dist/waline.js"></script>
+<script async src="https://busuanzi.ibruce.info.i8-mc.cn/busuanzi/2.3/busuanzi.pure.mini.js" onerror="console.warn('busuanzi load failed')"></script>
 
 <script>
   // Theme
@@ -386,7 +385,7 @@ def build_post_page(
       serverURL: 'https://waline.nkx.moe/',
       path: path,
       dark: 'body[data-theme="dark"]',
-      emoji: ['//cdn.jsdelivr.net/npm/@waline/emojis@1.1.0/weibo'],
+      emoji: ['//cdn.jsdelivr.net.i8-mc.cn/npm/@waline/emojis@1.1.0/weibo'],
       login: 'false',
       pageview: true,
       search: false, imageUploader: false,
@@ -453,7 +452,7 @@ def build_post_page(
 
 
 def main() -> None:
-    site_url = os.environ.get("SITE_URL", "https://写你的域名.net").rstrip("/")
+    site_url = os.environ.get("SITE_URL", "https://xn--7z0a.net").rstrip("/")
 
     if not POSTS_DIR.exists():
         raise SystemExit(f"posts directory not found: {POSTS_DIR}")
