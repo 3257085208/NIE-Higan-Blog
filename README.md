@@ -36,6 +36,7 @@
 ### 需要做的唯一一次设置：允许 Actions 写入仓库
 
 进入仓库的设置页面，找到 Actions 的权限设置，把 **Workflow permissions** 设为 **Read and write**（允许 actions bot 推送构建产物）。
+具体地址在Settings -> Actions -> General -> 往下滑 确定Workflow permissions为Read and write permissions即可
 
 > 如果不打开写入权限，构建会跑完，但最后一步“提交生成文件”会失败。
 
@@ -153,6 +154,3 @@ category: 说说
 - 不写 `top` 的文章会按默认规则排序（通常按时间）
 
 ---
-
-## License
-（按你的选择填写，例如 MIT）
