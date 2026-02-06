@@ -35,7 +35,7 @@ jobs:
       - name: Generate posts.json, sitemap.xml and standalone pages
         shell: bash
         run: |
-          SITE_URL='https://xn--7z0a.net' python3 build.py
+          SITE_URL='https://这里写你的域名.net' python3 build.py
 
       - name: Commit and Push
         shell: bash
