@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xn--7z0a.net/sitemap.xml
+Sitemap: https://这里写你的域名/sitemap.xml
