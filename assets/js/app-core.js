@@ -39,7 +39,7 @@ export function createApp() {
       const modal = document.createElement('div');
       modal.id = 'ext-link-modal';
       modal.className = 'ext-modal-overlay';
-      modal.innerHTML = '<div class="ext-modal-box"><div class="ext-modal-title"><i class="fa-solid fa-shield-halved" style="color:var(--accent);margin-right:8px"></i>即将离开 聶.NET</div><div class="ext-modal-content">您即将离开 <b>聶.NET</b>，去往：<div class="ext-modal-url"></div><div style="margin-top:12px;font-size:0.85rem;opacity:0.8">请注意您的账号和财产安全。</div></div><div class="ext-modal-actions"><button class="ext-btn ext-btn-cancel" type="button">取消</button><button class="ext-btn ext-btn-continue" type="button">继续访问</button></div></div>';
+      modal.innerHTML = '<div class="ext-modal-box"><div class="ext-modal-title"><i class="fa-solid fa-shield-halved" style="color:var(--accent);margin-right:8px"></i>即将离开 Higan</div><div class="ext-modal-content">您即将离开本站，去往：<div class="ext-modal-url"></div><div style="margin-top:12px;font-size:0.85rem;opacity:0.8">请注意您的账号和财产安全。</div></div><div class="ext-modal-actions"><button class="ext-btn ext-btn-cancel" type="button">取消</button><button class="ext-btn ext-btn-continue" type="button">继续访问</button></div></div>';
       modal.querySelector('.ext-modal-url').textContent = url;
       modal.querySelector('.ext-btn-cancel').addEventListener('click', () => modal.remove());
       modal.querySelector('.ext-btn-continue').addEventListener('click', () => {

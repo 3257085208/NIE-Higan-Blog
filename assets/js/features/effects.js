@@ -1,6 +1,6 @@
 export function initEasterEggs(state) {
   console.log(
-    '%c 聶.NET %c v1.2.3 %c 这里刻下了我十八岁时的偏执与热爱 ',
+    '%c Higan %c v1.2.3 %c 这里刻下了我十八岁时的偏执与热爱 ',
     'color:#fff;background:#1a202c;padding:5px 10px;border-radius:5px 0 0 5px;font-weight:bold',
     'color:#fff;background:#00b894;padding:5px 10px;font-weight:bold',
     'color:#666;background:#f2f3f5;padding:5px 10px;border-radius:0 5px 5px 0'
@@ -14,7 +14,7 @@ export function initEasterEggs(state) {
       '🚀 所谓最伟大的作品，就是每一个不曾起舞的日子，都没有辜负自己。'
     ];
     console.log(`%c ${messages[Math.floor(Math.random() * messages.length)]}`, 'color:#e91e63;font-size:16px;font-weight:bold');
-    alert('这，就是我最伟大的作品。—— 聶.NET');
+    alert('这，就是我最伟大的作品。—— Higan');
   };
 
   if (state._eggInited) return;

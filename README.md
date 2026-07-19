@@ -1,23 +1,23 @@
 # NIE-Higan-Blog
 
-> 轻量静态博客引擎 · Python 构建 · Markdown 写作 · 可托管在 Cloudflare Pages / 任意静态空间
+一套能直接上线的轻量静态博客。
 
-这是 [聶.NET](https://www.niekaixiang.com) 背后引擎的 **公开脱敏演示版**。  
-完整私有站点仓库（含真实配置与文章）不在此公开。
-
-线上效果参考：https://www.niekaixiang.com
+用 Markdown 写文章，Python 一键构建，产物丢到 Cloudflare Pages、GitHub Pages 或任意静态空间就能跑。不依赖 Node，没有后台，也没有花里胡哨的运行时。
 
 ---
 
-## 特性
+## 能做什么
 
-- 纯静态输出，无 Node 构建链
-- 文章 / 说说 / 归档 / 分类 / 友链 / 留言板 / 更新日志
-- Tabs、ANSI 终端块、任务列表、代码复制
-- 亮暗主题、阅读进度、TOC、外链提示
-- 构建期 SEO：canonical、OG、JSON-LD、RSS、sitemap、文章 meta、prev/next
-- Waline 评论按需加载（需自备服务端）
-- 依赖极少：PyYAML / Markdown / bleach / tinycss2
+- 文章、说说（动态）、归档、分类
+- 友链、留言板、更新日志
+- 亮色 / 暗色主题，阅读进度条，文章目录
+- Tabs、ANSI 终端代码块、任务列表、代码复制
+- 首页搜索分页、置顶、外链离开提示
+- 构建期生成 RSS、sitemap、canonical、Open Graph、JSON-LD
+- 文章 meta 与上下篇在构建时写进 HTML
+- 评论可接 Waline（按需加载，需自备服务端）
+
+依赖很少：`PyYAML`、`Markdown`、`bleach`、`tinycss2`。
 
 ---
 
@@ -25,8 +25,7 @@
 
 ```bash
 python -m venv .venv
-# Windows: .\.venv\Scripts\Activate.ps1
-source .venv/bin/activate
+source .venv/bin/activate          # Windows: .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
 export SITE_URL='https://example.com'   # Windows: $env:SITE_URL='https://example.com'
@@ -34,54 +33,95 @@ python build.py
 python -m http.server 8080 --directory dist
 ```
 
-打开 http://127.0.0.1:8080
+浏览器打开 http://127.0.0.1:8080
 
 ---
 
 ## 写文章
 
-在 `posts/` 新建：
+在 `posts/` 下新建 Markdown：
 
 ```markdown
 ---
 title: 标题
 date: 2026-07-19
 category: 日常
-tags: [demo]
-summary: 可选
+tags: [折腾, 博客]
+summary: 可选摘要
 top: 0
 ---
 
-正文……
+正文从这里开始。
 ```
 
-- `category: 说说` → 动态页
-- `top >= 1000` → 置顶徽章
-- 特殊文件：`guestbook.md` / `friends.md` / `changelog.md`
+说明：
+
+| 字段 | 作用 |
+|------|------|
+| `category: 说说` | 进入动态页，不计入首页文章统计 |
+| `top >= 1000` | 显示置顶徽章 |
+| `guestbook.md` / `friends.md` / `changelog.md` | 固定独立页 |
+
+### Tabs
+
+```markdown
+:::: tabs
+::: tab-item 其一
+内容 A
+:::
+::: tab-item 其二
+内容 B
+:::
+::::
+```
+
+### ANSI 终端块
+
+在代码围栏语言处写 `ansi`，即可渲染带颜色的终端输出。
 
 ---
 
 ## 配置
 
-编辑 `site.config.json`：
+改根目录 `site.config.json`：
 
-- `site.*` 站点信息
-- `social` 社交链接
-- `waline` 评论
+- `site`：站名、简介、头像、域名等
+- `social`：侧栏 / 首页社交链接
+- `waline`：评论服务地址与选项
 
-环境变量 `SITE_URL` 可覆盖 `site.url`（影响 canonical / RSS / sitemap）。
+部署时建议设置环境变量 `SITE_URL`，会覆盖配置里的 `site.url`，保证 canonical / RSS / sitemap 域名正确。
 
-前端点赞/PV 默认指向 `https://api.example.com/...`，请改 `assets/js/utils.js` 中的 `PV_API` / `LIKE_API`，或自己关掉相关初始化。
+点赞和阅读量默认指向示例 API（`assets/js/utils.js` 里的 `PV_API` / `LIKE_API`）。自己接服务就改这两个常量；不需要的话也可以在前端初始化里关掉。
 
 ---
 
-## 部署（Cloudflare Pages）
+## 部署
+
+### Cloudflare Pages
 
 | 项 | 值 |
 |----|-----|
 | Build command | `pip install -r requirements.txt && python build.py` |
-| Output | `dist` |
-| Env | `SITE_URL=https://your.domain` |
+| Output directory | `dist` |
+| Environment | `SITE_URL=https://你的域名` |
+
+### 其它
+
+Vercel、GitHub Pages、Nginx、对象存储静态托管都一样：构建出 `dist/`，整包挂上去即可。
+
+---
+
+## 目录
+
+```text
+builder/    构建器（读 Markdown，吐静态站）
+assets/     前端样式与脚本
+src/        HTML 模板
+posts/      文章与独立页
+public/     robots、缓存头等
+tests/      单元测试
+build.py    入口
+```
 
 ---
 
@@ -93,35 +133,8 @@ python -m unittest discover -s tests -v
 
 ---
 
-## 目录
+## 说明
 
-```text
-builder/   静态站点生成器
-assets/    前端 CSS/JS
-src/       HTML 模板
-posts/     Markdown 内容（演示文）
-public/    robots / headers
-tests/     unittest
-```
+示例配置和演示文章只是为了让你 clone 下来就能构建。上线前请换成自己的域名、头像、评论服务和正文。
 
----
-
-## 与私有站的关系
-
-| | 私有库 NIE | 本仓库 Higan |
-|--|-----------|--------------|
-| 用途 | 真实站点源码 | 秀肌肉 / 二次开发模板 |
-| 配置 | 真实域名与密钥侧配置 | example.com 占位 |
-| 文章 | 全部博文 | 少量演示文 |
-| 联系方式 | 真实社交 | 脱敏 |
-
-引擎代码同源；本仓库删除了个人联系方式、私有 API 域名与私人文章。
-
----
-
-## License
-
-引擎代码可用于学习与二次开发。  
-演示文与品牌文案请勿伪造成官方站点。
-
-花有重开日，人无再少年。
+爱怎么改怎么改，记得留个 star 就行。

@@ -2,7 +2,7 @@
   "site": {
     "title": "Higan Blog",
     "tagline": "Static. Minimal. Yours.",
-    "description": "NIE-Higan-Blog — a lightweight static blog engine demo",
+    "description": "NIE-Higan-Blog — a lightweight static blog engine",
     "url": "https://example.com",
     "favicon": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f30a.png",
     "avatar": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f30a.png",

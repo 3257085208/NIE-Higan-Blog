@@ -1,3 +1,3 @@
-欢迎来到 Higan 演示站留言板。
+有什么想说的，写在下面就好。
 
-（公开库为脱敏演示，请将 Waline `serverURL` 换成你自己的实例。）
+部署时请把 `site.config.json` 里的 Waline `serverURL` 换成你自己的实例。

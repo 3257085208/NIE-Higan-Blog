@@ -67,7 +67,7 @@ def _build_prev_next(posts, current):
 
 def build_post(template, cfg, post, page_type="post", all_posts=None):
     site_cfg = site(cfg)
-    title = str(site_cfg.get("title", "聶.NET"))
+    title = str(site_cfg.get("title", "Higan"))
     page_title = f"{post['title']} | {title}"
     meta_desc = str(post.get("summary", "")).strip() or str(site_cfg.get("description", ""))
     keywords = ",".join(str(tag) for tag in post.get("tags", []) if isinstance(post.get("tags"), list))
@@ -239,7 +239,7 @@ def build_friends(template, cfg):
 
 def build_404(cfg):
     site_cfg = site(cfg)
-    title = esc(site_cfg.get("title", "聶.NET"))
+    title = esc(site_cfg.get("title", "Higan"))
     desc = esc(site_cfg.get("description", ""))
     favicon = esc(site_cfg.get("favicon", ""))
     return (

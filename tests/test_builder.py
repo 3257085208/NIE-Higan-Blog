@@ -37,7 +37,7 @@ class BuilderTests(unittest.TestCase):
         cfg = {
             "_asset_version": "1",
             "site": {
-                "title": "聶.NET",
+                "title": "Higan",
                 "tagline": "is NKX !",
                 "description": "desc",
                 "url": "https://example.com",
@@ -71,7 +71,7 @@ class BuilderTests(unittest.TestCase):
         cfg = {
             "_asset_version": "1",
             "site": {
-                "title": "聶.NET",
+                "title": "Higan",
                 "description": "desc",
                 "url": "https://example.com",
                 "statusName": "NKX",

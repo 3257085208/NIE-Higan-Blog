@@ -166,7 +166,7 @@ def site(cfg):
     return cfg.get("site", {}) or {}
 
 
-def site_title(cfg, default="聶.NET"):
+def site_title(cfg, default="Higan"):
     return str(site(cfg).get("title", default))
 
 
