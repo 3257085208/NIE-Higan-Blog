@@ -1,0 +1,19 @@
+# 静态资源：缓存 7 天
+/assets/*
+  Cache-Control: public, max-age=604800
+
+# 图片/字体：缓存 30 天（如果你改得不频繁可以更长）
+/*.png
+  Cache-Control: public, max-age=2592000
+/*.jpg
+  Cache-Control: public, max-age=2592000
+/*.jpeg
+  Cache-Control: public, max-age=2592000
+/*.webp
+  Cache-Control: public, max-age=2592000
+/*.woff2
+  Cache-Control: public, max-age=2592000
+
+# HTML：浏览器不强缓存，但允许边缘缓存 1 小时 + 过期先用旧的再后台更新
+/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400

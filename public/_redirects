@@ -1,0 +1,3 @@
+# Physical paths are already at site root (e.g. /friends/index.html).
+# Cloudflare Pages resolves directory index files automatically.
+# Add custom redirects below if needed.

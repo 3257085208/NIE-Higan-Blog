@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="__META_DESC__">
+<meta name="view-transition" content="same-origin">
+<meta name="color-scheme" content="dark light">
+<script>try{var t=localStorage.getItem('theme')||'light',d=t==='dark'||t==='night',r=document.documentElement;r.setAttribute('data-theme',d?'dark':'light');r.style.colorScheme=d?'dark':'light';r.style.backgroundColor=d?'#1a202c':'#ffffff';r.classList.add('no-theme-transition')}catch(e){}</script>
+<style>html.no-theme-transition,html.no-theme-transition *{transition:none!important}</style>
+__EXTRA_HEAD__
+<title>__PAGE_TITLE__</title>
+<link rel="shortcut icon" href="__FAVICON_URL__">
+<link rel="icon" href="__FAVICON_URL__">
+<link rel="dns-prefetch" href="//npm.elemecdn.com">
+<link rel="dns-prefetch" href="//cdn.staticfile.org.i8-mc.cn">
+<link rel="dns-prefetch" href="//cdn.jsdelivr.net.i8-mc.cn">
+<link rel="preload" href="https://cdn.staticfile.org.i8-mc.cn/github-markdown-css/5.2.0/github-markdown-light.min.css" as="style">
+<link rel="preload" href="https://cdn.staticfile.org.i8-mc.cn/font-awesome/6.4.2/css/all.min.css" as="style">
+<link rel="stylesheet" href="https://cdn.staticfile.org.i8-mc.cn/github-markdown-css/5.2.0/github-markdown-light.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org.i8-mc.cn/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="https://blog-assets.i8-mc.cn/nunito/nunito.css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
+<link rel="stylesheet" href="/assets/app.css?v=__ASSET_VERSION__">
+</head>
+<body data-theme="light" data-page="__PAGE_TYPE__">
+<div id="overlay"></div>
+<nav id="sidebar">
+<div style="font-weight:900;font-size:1.6rem;color:var(--accent);margin-bottom:20px">MENU</div>
+<a href="/" data-close-menu="1" class="menu-link"><i class="fa-solid fa-house"></i> 首页</a>
+<a href="/status/" data-close-menu="1" class="menu-link"><i class="fa-solid fa-feather"></i> 动态</a>
+<a href="/category/" data-close-menu="1" class="menu-link"><i class="fa-solid fa-folder-open"></i> 分类</a>
+<a href="/archive/" data-close-menu="1" class="menu-link"><i class="fa-solid fa-box-archive"></i> 归档</a>
+<a href="/friends/" data-close-menu="1" class="menu-link"><i class="fa-solid fa-link"></i> 友链</a>
+<a href="/guestbook/" data-close-menu="1" class="menu-link"><i class="fa-solid fa-comment-dots"></i> 留言板</a>
+<a href="__STATUS_URL__" target="_blank" rel="noopener noreferrer" class="menu-link"><i class="fa-solid fa-server"></i> 站点状态</a>
+<a href="/rss.xml" class="menu-link"><i class="fa-solid fa-rss"></i> RSS</a>
+</nav>
+<div class="container">
+<header style="display:flex;justify-content:space-between;align-items:center;gap:40px">
+<div class="brand-area" data-home-link style="flex-shrink:0">
+<img src="__AVATAR_URL__" class="avatar" alt="avatar">
+<span class="site-title">__SITE_TITLE__</span>
+</div>
+<div style="display:flex;align-items:center;gap:24px;justify-content:flex-end;flex:1">
+<nav class="pc-nav" style="margin:0;flex:1;justify-content:flex-end">
+<a href="/">首页</a><span class="nav-divider">/</span>
+<a href="/status/">动态</a><span class="nav-divider">/</span>
+<a href="/category/">分类</a><span class="nav-divider">/</span>
+<a href="/archive/">归档</a><span class="nav-divider">/</span>
+<a href="/friends/">友链</a><span class="nav-divider">/</span>
+<a href="/guestbook/">留言</a><span class="nav-divider">/</span>
+<a href="__STATUS_URL__" target="_blank" rel="noopener noreferrer">状态</a><span class="nav-divider">/</span>
+<a href="/rss.xml">RSS</a>
+</nav>
+<button id="theme-icon" class="fa-solid fa-sun theme-icon icon-button" type="button" aria-label="切换主题" style="margin:0;font-size:1.25rem;flex-shrink:0"></button>
+<button class="mobile-menu-btn icon-button" type="button" aria-label="打开菜单" style="margin:0;flex-shrink:0"><i class="fa-solid fa-bars"></i></button>
+</div>
+</header>
+<div id="home-view">
+<div class="intro-text">__INTRO_TEXT__<span class="cursor"></span></div>
+<div class="social-contact">__SOCIAL_LINKS_HTML__</div>
+<div class="section-header">近期发布</div>
+<div class="list-tools">
+<div class="search-box" title="搜索标题 / 标签 / 分类">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input id="home-search-input" class="search-input" type="text" placeholder="搜索..." autocomplete="off">
+<span id="home-search-clear" class="search-clear hidden" title="清空">×</span>
+</div>
+<div class="pager">
+<span id="home-pager-prev" class="tag-pill pager-btn">上一页</span>
+<span id="home-pager-info" class="pager-info">1/1 · 0篇</span>
+<span id="home-pager-next" class="tag-pill pager-btn">下一页</span>
+</div>
+</div>
+<div id="posts-container" class="post-list">
+<!--PRERENDER:START-->
+<!--PRERENDER:END-->
+</div>
+<div class="list-tools" style="justify-content:center;margin-top:40px">
+<div class="pager">
+<span class="tag-pill pager-btn home-pager-prev-btn">上一页</span>
+<span class="pager-info home-pager-info-txt">1/1 · 0篇</span>
+<span class="tag-pill pager-btn home-pager-next-btn">下一页</span>
+</div>
+</div>
+</div>
+<div id="status-view" class="hidden">
+<h2 class="section-header" style="margin-top:0">我的动态</h2>
+<div id="status-content"></div>
+</div>
+<div id="archive-view" class="hidden">
+<h2 id="archive-title" class="section-header" style="margin-top:0">归档</h2>
+<div id="archive-content"></div>
+</div>
+<div id="article-view" class="hidden">
+<h1 id="article-title" class="article-title"></h1>
+<div class="article-meta">
+<span><i class="fa-regular fa-calendar"></i> <span id="article-date"></span></span>
+<span><i class="fa-regular fa-folder"></i> <span id="article-category"></span></span>
+<span><i class="fa-regular fa-hashtag"></i> <span id="article-tags"></span></span>
+<span><i class="fa-regular fa-file-word"></i> <span id="article-words"></span> 字</span>
+<span><i class="fa-regular fa-eye"></i> <span id="article-pv">...</span> 阅</span>
+<span class="like-btn" id="article-like-btn" style="cursor:pointer"><i class="fa-regular fa-heart"></i> <span class="like-count">0</span> 赞</span>
+</div>
+<article id="article-content" class="markdown-body"></article>
+<div style="margin-top:50px"><div id="waline"></div></div>
+</div>
+<footer>
+<div style="margin-bottom:10px">
+<span><i class="fa-regular fa-eye"></i> 总阅读 <span id="site-pv">...</span></span>
+<span style="margin:0 10px;color:var(--border)">|</span>
+<span>已发布 <span id="total-posts">0</span></span>
+<span style="margin:0 10px;color:var(--border)">|</span>
+<span>字数 <span id="total-words">0</span></span>
+</div>
+<div style="margin-bottom:5px">&copy; __FOOTER_YEAR__ Powered by __POWERED_BY__</div>
+<div style="display:flex;justify-content:center;align-items:center;gap:8px;font-size:0.85rem">
+<span>Cloud Computing Support</span>
+<a href="https://github.com" target="_blank" rel="noopener noreferrer" title="GitHub Pages" style="color:var(--text-sub);text-decoration:none;display:inline-flex;align-items:center"><i class="fa-brands fa-github"></i></a>
+<a href="https://www.cloudflare.com" target="_blank" rel="noopener noreferrer" title="Cloudflare" style="color:var(--text-sub);text-decoration:none;display:inline-flex;align-items:center"><i class="fa-brands fa-cloudflare"></i></a>
+</div>
+<div style="margin-top:10px;font-size:0.85rem">
+小站已稳定运行 <span id="uptime">0</span> 天
+<span style="opacity:.6"> | </span>
+<span id="render-time-inline" style="opacity:.75">渲染 0.000 s</span>
+<span style="opacity:.6"> | </span>
+<a href="/changelog/" class="changelog-link" title="查看更新记录"><i class="fa-solid fa-timeline"></i> 更新日志</a>
+</div>
+</footer>
+</div>
+<div id="float-btn-group">
+<button class="float-btn icon-button" id="float-back-btn" type="button" title="返回" aria-label="返回" style="display:none"><i class="fa-solid fa-reply"></i></button>
+<button class="float-btn icon-button" id="float-top-btn" type="button" title="顶部" aria-label="返回顶部"><i class="fa-solid fa-arrow-up"></i></button>
+</div>
+<script src="/config.js?v=__ASSET_VERSION__"></script>
+<script type="module" src="/assets/app.js?v=__ASSET_VERSION__"></script>
+</body>
+</html>

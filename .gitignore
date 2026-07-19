@@ -1,0 +1,10 @@
+# build output
+/dist/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# local
+.DS_Store

@@ -1,0 +1,53 @@
+:root {
+    --bg: #ffffff; --text: #50616d; --text-sub: #9aa5b1; --accent: #42b983;
+    --border: #f0f2f5; --menu-bg: rgba(255,255,255,0.98); --tag-bg: #f8fafc;
+    --float-btn-bg: #ffffff; --status-bg: #f7f9fa;
+}
+[data-theme="dark"] {
+    --bg: #1a202c; --text: #e2e8f0; --text-sub: #a0aec0; --accent: #68d391;
+    --border: #2d3748; --menu-bg: rgba(26,32,44,0.98); --tag-bg: #2d3748;
+    --float-btn-bg: #2d3748; --status-bg: #2d3748;
+}
+[data-theme="dark"] .markdown-body { color-scheme:dark; }
+[data-theme="dark"] .markdown-body code,
+[data-theme="dark"] .markdown-body tt { background:#2d3748; border-color:#4a5568; color:#e2e8f0; }
+[data-theme="dark"] .markdown-body pre { background:#222b36; border-color:#4a5568; }
+[data-theme="dark"] .markdown-body pre code { background:transparent; border-color:transparent; color:#e2e8f0; }
+[data-theme="dark"] .markdown-body table { border-color:#4a5568; }
+[data-theme="dark"] .markdown-body th,
+[data-theme="dark"] .markdown-body td { border-color:#4a5568; }
+[data-theme="dark"] .markdown-body th { background:#2d3748; }
+[data-theme="dark"] .markdown-body hr { border-top-color:#4a5568; }
+[data-theme="dark"] .markdown-body blockquote { border-left-color:var(--accent); background:rgba(45,55,72,0.5); }
+[data-theme="dark"] .markdown-body img { opacity:0.92; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { background:var(--bg); }
+html, body { background-color:#fff !important; }
+html[data-theme="dark"], html[data-theme="dark"] body { background-color:#1a202c !important; }
+body {
+    font-family:'Nunito',-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif !important;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    color:var(--text); line-height:1.6;
+    transition:background-color 0.4s cubic-bezier(0.4,0,0.2,1), color 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+a { text-decoration:none; color:inherit; }
+.hidden { display:none !important; }
+.icon-button {
+    border:0;
+    outline:none;
+    background:none;
+    box-shadow:none;
+    padding:0;
+    margin:0;
+    color:inherit;
+    font-size:inherit;
+    line-height:1;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    border-radius:0;
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+}

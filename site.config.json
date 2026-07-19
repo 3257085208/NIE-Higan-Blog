@@ -1,0 +1,41 @@
+{
+  "site": {
+    "title": "Higan Blog",
+    "tagline": "Static. Minimal. Yours.",
+    "description": "NIE-Higan-Blog — a lightweight static blog engine demo",
+    "url": "https://example.com",
+    "favicon": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f30a.png",
+    "avatar": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f30a.png",
+    "intro": "花有重开日，人无再少年",
+    "statusUrl": "https://example.com/status-page",
+    "poweredBy": "Higan",
+    "footerYear": 2026,
+    "uptimeStart": "2026-01-21",
+    "statusName": "Higan"
+  },
+  "social": [
+    {
+      "title": "Email",
+      "href": "mailto:you@example.com",
+      "iconClass": "fa-solid fa-envelope"
+    },
+    {
+      "title": "GitHub",
+      "href": "https://github.com/3257085208/NIE-Higan-Blog",
+      "iconClass": "fa-brands fa-github"
+    }
+  ],
+  "waline": {
+    "serverURL": "https://waline.example.com",
+    "emoji": [
+      "//cdn.jsdelivr.net/npm/@waline/emojis@1.1.0/weibo"
+    ],
+    "login": "disable",
+    "pageview": true,
+    "search": false,
+    "imageUploader": false,
+    "locale": {
+      "placeholder": "支持 Markdown…"
+    }
+  }
+}
