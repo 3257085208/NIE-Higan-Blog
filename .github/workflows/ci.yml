@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python -m compileall -q builder build.py
+      - run: python build.py
+        env:
+          SITE_URL: https://example.com
+      - name: Check JavaScript syntax
+        run: find assets -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Check generated data
+        run: |
+          python -m json.tool dist/posts.json >/dev/null
+          python -m json.tool dist/redirects.json >/dev/null

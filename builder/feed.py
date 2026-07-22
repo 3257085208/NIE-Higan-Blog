@@ -33,11 +33,12 @@ def build_rss(cfg, posts):
             f"<description><![CDATA[{str(post.get('summary', '')).replace(']]>',']]]]><![CDATA[>')}]]></description>"
             f"<content:encoded><![CDATA[{raw}]]></content:encoded>{categories}</item>"
         )
+    last_build = rfc822(normal_posts[0].get("date", "")) if normal_posts else rfc822(dt.date.today().isoformat())
     return (
         f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="{ns_atom}" xmlns:content="{ns_content}">\n'
         f'<channel><title>{esc(title)}</title><link>{esc(site_url + "/")}</link><description>{esc(desc)}</description>'
         f'<language>zh-CN</language><atom:link href="{esc(site_url + "/rss.xml")}" rel="self" type="application/rss+xml" />'
-        f'<lastBuildDate>{dt.datetime.now(dt.timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")}</lastBuildDate>'
+        f"<lastBuildDate>{last_build}</lastBuildDate>"
         + "".join(items)
         + "\n</channel></rss>\n"
     )
@@ -45,7 +46,8 @@ def build_rss(cfg, posts):
 
 def build_sitemap(cfg, posts):
     site_url = str(site(cfg).get("url", "")).rstrip("/")
-    today = dt.date.today().isoformat()
+    dates = [str(post.get("date", "")) for post in posts if post.get("date")]
+    today = max(dates) if dates else dt.date.today().isoformat()
 
     def node(path, lastmod):
         return f"<url><loc>{esc(site_url.rstrip('/') + path)}</loc><lastmod>{esc(lastmod)}</lastmod></url>"
@@ -61,3 +63,7 @@ def build_sitemap(cfg, posts):
         + "\n</urlset>\n"
     )
 
+
+def build_robots(cfg):
+    site_url = str(site(cfg).get("url", "")).rstrip("/")
+    return f"User-agent: *\nAllow: /\n\nSitemap: {site_url}/sitemap.xml\n"

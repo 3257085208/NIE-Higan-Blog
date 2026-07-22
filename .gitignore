@@ -5,6 +5,8 @@
 __pycache__/
 *.pyc
 .venv/
+.coverage
+.ruff_cache/
 
 # local
 .DS_Store

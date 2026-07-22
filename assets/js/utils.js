@@ -1,12 +1,12 @@
 export const CFG = window.SITE_CONFIG || {};
 export const SITE = CFG.site || {};
-export const PV_API = 'https://api.example.com/api/pv';
-export const LIKE_API = 'https://api.example.com/api/like';
+const INTEGRATIONS = CFG.integrations || {};
+export const PV_API = String(INTEGRATIONS.pvApi || '');
+export const LIKE_API = String(INTEGRATIONS.likeApi || '');
 
 export const safeParse = (value, fallback) => {
   try { return JSON.parse(value); } catch { return fallback; }
 };
-
 export function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -15,8 +15,18 @@ export function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
-
-
+export const safeDecodeURIComponent = value => {
+  try { return decodeURIComponent(value); } catch { return value; }
+};
+export const safeInternalUrl = (value, fallback = '/') => {
+  try {
+    const url = new URL(String(value || fallback), location.origin);
+    if (url.origin !== location.origin || !url.pathname.startsWith('/')) return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+};
 export const $ = (selector, root) => (root || document).querySelector(selector);
 export const $$ = (selector, root) => [...(root || document).querySelectorAll(selector)];
 export const isArticle = () => document.body?.getAttribute('data-page') === 'post' || !!($('#article-view') && !$('#article-view').classList.contains('hidden'));
@@ -78,5 +88,7 @@ export function applyTheme(theme) {
       ? 'fa-solid fa-sun theme-icon icon-button'
       : 'fa-solid fa-moon theme-icon icon-button';
   }
+  const button = $('#theme-icon');
+  if (button) button.setAttribute('aria-label', value === 'light' ? '切换到深色主题' : '切换到浅色主题');
   return value;
 }

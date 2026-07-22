@@ -1,10 +1,12 @@
-import { CFG, LIKE_API, PV_API, $, $$, isArticle, loadCSSOnce, importOnce, safeParse } from '../utils.js';
+import { CFG, LIKE_API, PV_API, SITE, $, $$, isArticle, loadCSSOnce, importOnce, safeParse } from '../utils.js';
 
 export function initExternalLinkChecker(app) {
-  const whitelist = ['example.com', location.hostname]
+  const configured = Array.isArray(CFG.externalLinkWhitelist) ? CFG.externalLinkWhitelist : [];
+  const whitelist = [...configured, SITE.url, location.hostname]
     .map(domain => {
       try {
-        return new URL(`https://${domain}`).hostname.toLowerCase();
+        const value = String(domain || '');
+        return new URL(value.includes('://') ? value : `https://${value}`).hostname.toLowerCase();
       } catch {
         return String(domain || '').toLowerCase();
       }
@@ -34,37 +36,53 @@ export function initExternalLinkChecker(app) {
 }
 
 export function initLikes() {
+  if (!LIKE_API) return;
   let local = safeParse(localStorage.getItem('nie_likes') || '[]', []);
   if (!Array.isArray(local)) local = [];
 
   const bind = () => {
     $$('.like-btn').forEach(button => {
-      if (button.dataset.likeBound) return;
+      if (button.dataset.likeBound || button.closest('.hidden')) return;
       button.dataset.likeBound = '1';
       const id = button.getAttribute('data-id') || location.pathname;
       const icon = $('i', button);
       const countEl = $('.like-count', button);
       if (local.includes(id)) {
         button.classList.add('liked');
+        button.setAttribute('aria-pressed', 'true');
         if (icon) icon.className = 'fa-solid fa-heart';
       }
-      fetch(`${LIKE_API}?path=${encodeURIComponent(id)}&action=get`)
-        .then(response => response.json())
+      fetch(`${LIKE_API}?path=${encodeURIComponent(id)}&action=get`, { cache: 'no-store' })
+        .then(response => {
+          if (!response.ok) throw new Error(`Like API returned ${response.status}`);
+          return response.json();
+        })
         .then(data => {
           if (countEl) countEl.innerText = data.likes || 0;
+        })
+        .catch(error => {
+          if (countEl) countEl.innerText = '-';
+          console.warn('Like count load failed', error);
         });
-      button.onclick = event => {
+      button.onclick = async event => {
         event.stopPropagation();
         const liked = button.classList.contains('liked');
-        button.classList.toggle('liked');
-        if (icon) icon.className = liked ? 'fa-regular fa-heart' : 'fa-solid fa-heart';
-        fetch(`${LIKE_API}?path=${encodeURIComponent(id)}&action=${liked ? 'dec' : 'inc'}`)
-          .then(response => response.json())
-          .then(data => {
-            if (countEl) countEl.innerText = data.likes || 0;
-          });
-        local = liked ? local.filter(item => item !== id) : [...local, id];
-        localStorage.setItem('nie_likes', JSON.stringify(local));
+        button.disabled = true;
+        try {
+          const response = await fetch(`${LIKE_API}?path=${encodeURIComponent(id)}&action=${liked ? 'dec' : 'inc'}`, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Like API returned ${response.status}`);
+          const data = await response.json();
+          button.classList.toggle('liked', !liked);
+          button.setAttribute('aria-pressed', liked ? 'false' : 'true');
+          if (icon) icon.className = liked ? 'fa-regular fa-heart' : 'fa-solid fa-heart';
+          if (countEl) countEl.innerText = data.likes || 0;
+          local = liked ? local.filter(item => item !== id) : [...new Set([...local, id])];
+          localStorage.setItem('nie_likes', JSON.stringify(local));
+        } catch (error) {
+          console.warn('Like update failed', error);
+        } finally {
+          button.disabled = false;
+        }
       };
     });
   };
@@ -74,9 +92,13 @@ export function initLikes() {
 }
 
 export function initSelfHostedStats() {
+  if (!PV_API) return;
   const setPV = (path, elId) => {
-    fetch(`${PV_API}?path=${encodeURIComponent(path)}`)
-      .then(response => response.json())
+    fetch(`${PV_API}?path=${encodeURIComponent(path)}`, { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error(`PV API returned ${response.status}`);
+        return response.json();
+      })
       .then(data => {
         const el = document.getElementById(elId);
         if (el) el.innerText = data.pv;
@@ -96,8 +118,8 @@ export function initWaline() {
   const root = $('#waline');
   const pageType = document.body?.getAttribute('data-page') || '';
   if (!walineCfg || !root || !['post', 'guestbook'].includes(pageType)) return;
-  loadCSSOnce('https://cdn.jsdelivr.net.i8-mc.cn/npm/@waline/client/dist/waline.css');
-  importOnce('https://cdn.jsdelivr.net.i8-mc.cn/npm/@waline/client/dist/waline.mjs')
+  loadCSSOnce('/assets/vendor/waline/waline.css');
+  importOnce('/assets/vendor/waline/waline.js')
     .then(({ init }) => {
       if (typeof init !== 'function' || root.dataset.inited === '1') return;
       root.dataset.inited = '1';
@@ -116,4 +138,3 @@ export function initWaline() {
     })
     .catch(error => console.warn('Waline load failed', error));
 }
-

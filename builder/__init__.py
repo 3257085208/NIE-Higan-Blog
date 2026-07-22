@@ -1,2 +1,3 @@
-from .pipeline import main
+from .pipeline import main as main
 
+__all__ = ["main"]

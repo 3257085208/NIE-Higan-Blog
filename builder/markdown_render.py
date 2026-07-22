@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import re
+from contextvars import ContextVar
 
 import markdown
 
 from .common import esc, sanitize, strip_ansi, strip_bs
 
 SGR_RE = re.compile(r"\x1b\[([0-9;]*)m")
-BLOCK_COUNTER = [0]
+BLOCK_COUNTER = ContextVar("markdown_block_counter", default=None)
 SGR_MAP = {}
 for code in range(30, 38):
     SGR_MAP[code] = ("fg", str(code - 30))
@@ -20,33 +21,44 @@ for code in range(100, 108):
 
 
 def block_id(prefix="md"):
-    BLOCK_COUNTER[0] += 1
-    return f"{prefix}-{BLOCK_COUNTER[0]}"
+    counter = BLOCK_COUNTER.get()
+    if counter is None:
+        counter = ["", 0]
+        BLOCK_COUNTER.set(counter)
+    counter[1] += 1
+    scope = f"-{counter[0]}" if counter[0] else ""
+    return f"{prefix}{scope}-{counter[1]}"
 
 
-def md_to_html(text, *, nl2br=True):
-    text = render_tabs(text)
-    text = render_ansi_fences(text)
-    extensions = ["fenced_code", "tables", "sane_lists", "smarty", "toc", "attr_list", "admonition"]
-    if nl2br:
-        extensions.append("nl2br")
-    html = markdown.markdown(
-        text,
-        extensions=extensions,
-        extension_configs={"toc": {"permalink": False}},
-        output_format="html5",
-    )
-    html = re.sub(
-        r'<li>\s*\[ \]\s+',
-        '<li class="task-list-item" style="list-style:none;"><input type="checkbox" disabled style="margin:0 0.2em 0.25em -1.6em;vertical-align:middle;"> ',
-        html,
-    )
-    html = re.sub(
-        r'<li>\s*\[(x|X)\]\s+',
-        '<li class="task-list-item" style="list-style:none;"><input type="checkbox" disabled checked style="margin:0 0.2em 0.25em -1.6em;vertical-align:middle;"> ',
-        html,
-    )
-    return sanitize(html)
+def md_to_html(text, *, nl2br=True, id_prefix=""):
+    safe_prefix = re.sub(r"[^A-Za-z0-9_-]", "-", str(id_prefix)).strip("-")
+    token = BLOCK_COUNTER.set([safe_prefix, 0]) if BLOCK_COUNTER.get() is None else None
+    try:
+        text = render_tabs(text)
+        text = render_ansi_fences(text)
+        extensions = ["fenced_code", "tables", "sane_lists", "smarty", "toc", "attr_list", "admonition"]
+        if nl2br:
+            extensions.append("nl2br")
+        html = markdown.markdown(
+            text,
+            extensions=extensions,
+            extension_configs={"toc": {"permalink": False}},
+            output_format="html5",
+        )
+        html = re.sub(
+            r'<li>\s*\[ \]\s+',
+            '<li class="task-list-item" style="list-style:none;"><input type="checkbox" disabled style="margin:0 0.2em 0.25em -1.6em;vertical-align:middle;"> ',
+            html,
+        )
+        html = re.sub(
+            r'<li>\s*\[(x|X)\]\s+',
+            '<li class="task-list-item" style="list-style:none;"><input type="checkbox" disabled checked style="margin:0 0.2em 0.25em -1.6em;vertical-align:middle;"> ',
+            html,
+        )
+        return sanitize(html)
+    finally:
+        if token is not None:
+            BLOCK_COUNTER.reset(token)
 
 
 def md_to_plain(text):
@@ -193,4 +205,3 @@ def parse_tabs(lines, start):
             f'<div class="nsk-magic-tab-body{active}" data-tab-index="{index}" data-tab-group="{group_id}">{md_to_html(body, nl2br=False)}</div>'
         )
     return f'\n<div class="nsk-magic-tabs enabled" data-tab-group="{group_id}">{"".join(parts)}</div>\n', i
-

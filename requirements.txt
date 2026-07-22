@@ -1,4 +1,4 @@
-PyYAML>=6.0
-Markdown>=3.6
-bleach>=6.1
-tinycss2>=1.2
+PyYAML==6.0.3
+Markdown==3.10.2
+bleach==6.4.0
+tinycss2==1.5.1

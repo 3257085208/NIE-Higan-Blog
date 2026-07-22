@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from .common import POSTS_DIR, STANDALONE, as_int, count_words, normalize_date, split_fm
 from .markdown_render import md_to_plain
 
@@ -18,6 +20,7 @@ def parse_post(path):
         "file": path.name,
         "title": title,
         "date": date,
+        "slug": str(front_matter.get("slug", "") or "").strip(),
         "category": category,
         "top": as_int(front_matter.get("top")),
         "tags": tags,
@@ -36,11 +39,17 @@ def load_posts():
     ]
 
 
-def assign_post_urls(posts):
-    counter = {}
-    for post in sorted(posts, key=lambda item: (item["date"], item["file"]), reverse=True):
-        date = post["date"]
-        counter[date] = counter.get(date, 0) + 1
-        post["slug"] = f"{date.replace('-', '')}-{counter[date]:02d}"
+def assign_post_urls(posts, persisted=None):
+    persisted = persisted or {}
+    used = {}
+    for post in posts:
+        slug = str(post.get("slug") or persisted.get(post.get("file", ""), "")).strip()
+        if not slug:
+            raise ValueError(f"{post.get('file', 'unknown post')}: missing permanent slug")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", slug):
+            raise ValueError(f"{post.get('file', 'unknown post')}: invalid slug {slug!r}")
+        if slug in used:
+            raise ValueError(f"duplicate slug {slug!r}: {used[slug]} and {post.get('file', 'unknown post')}")
+        used[slug] = post.get("file", "unknown post")
+        post["slug"] = slug
         post["url"] = f"/p/{post['slug']}/"
-

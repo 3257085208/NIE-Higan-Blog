@@ -4,6 +4,7 @@ import { initExternalLinkChecker, initLikes, initSelfHostedStats, initWaline } f
 import { fetchPostsIfNeeded, redirectHashPostToCanonical, redirectLegacyHashRoutes, renderPrevNext } from './features/navigation.js';
 import { renderList } from './features/listing.js';
 import { checkGlobalBackBtn, handleScroll, initBackgroundSwitcher, loadTheme, startTimer, toggleMenu, toggleTheme } from './features/shell.js';
+import { SITE } from './utils.js';
 
 export function createApp() {
   const state = {
@@ -37,16 +38,77 @@ export function createApp() {
       const old = document.getElementById('ext-link-modal');
       if (old) old.remove();
       const modal = document.createElement('div');
+      const previousFocus = document.activeElement;
       modal.id = 'ext-link-modal';
       modal.className = 'ext-modal-overlay';
-      modal.innerHTML = '<div class="ext-modal-box"><div class="ext-modal-title"><i class="fa-solid fa-shield-halved" style="color:var(--accent);margin-right:8px"></i>即将离开 Higan</div><div class="ext-modal-content">您即将离开本站，去往：<div class="ext-modal-url"></div><div style="margin-top:12px;font-size:0.85rem;opacity:0.8">请注意您的账号和财产安全。</div></div><div class="ext-modal-actions"><button class="ext-btn ext-btn-cancel" type="button">取消</button><button class="ext-btn ext-btn-continue" type="button">继续访问</button></div></div>';
-      modal.querySelector('.ext-modal-url').textContent = url;
-      modal.querySelector('.ext-btn-cancel').addEventListener('click', () => modal.remove());
-      modal.querySelector('.ext-btn-continue').addEventListener('click', () => {
-        window.open(url, '_blank', 'noopener,noreferrer');
+      const siteName = String(SITE.title || '本站');
+      const box = document.createElement('div');
+      box.className = 'ext-modal-box';
+      box.setAttribute('role', 'dialog');
+      box.setAttribute('aria-modal', 'true');
+      box.setAttribute('aria-labelledby', 'ext-modal-title');
+      const title = document.createElement('div');
+      title.className = 'ext-modal-title';
+      title.id = 'ext-modal-title';
+      const shield = document.createElement('i');
+      shield.className = 'fa-solid fa-shield-halved';
+      shield.style.cssText = 'color:var(--accent);margin-right:8px';
+      title.append(shield, document.createTextNode(`即将离开 ${siteName}`));
+      const content = document.createElement('div');
+      content.className = 'ext-modal-content';
+      content.append(document.createTextNode('您即将离开 '));
+      const strong = document.createElement('b');
+      strong.textContent = siteName;
+      content.append(strong, document.createTextNode('，去往：'));
+      const destination = document.createElement('div');
+      destination.className = 'ext-modal-url';
+      destination.textContent = url;
+      const warning = document.createElement('div');
+      warning.style.cssText = 'margin-top:12px;font-size:0.85rem;opacity:0.8';
+      warning.textContent = '请注意您的账号和财产安全。';
+      content.append(destination, warning);
+      const actions = document.createElement('div');
+      actions.className = 'ext-modal-actions';
+      const cancel = document.createElement('button');
+      cancel.className = 'ext-btn ext-btn-cancel';
+      cancel.type = 'button';
+      cancel.textContent = '取消';
+      const proceed = document.createElement('button');
+      proceed.className = 'ext-btn ext-btn-continue';
+      proceed.type = 'button';
+      proceed.textContent = '继续访问';
+      actions.append(cancel, proceed);
+      box.append(title, content, actions);
+      modal.appendChild(box);
+      const close = () => {
         modal.remove();
+        previousFocus?.focus?.();
+      };
+      cancel.addEventListener('click', close);
+      proceed.addEventListener('click', () => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        close();
+      });
+      modal.addEventListener('click', event => {
+        if (event.target === modal) close();
+      });
+      modal.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          close();
+          return;
+        }
+        if (event.key !== 'Tab') return;
+        if (event.shiftKey && document.activeElement === cancel) {
+          event.preventDefault();
+          proceed.focus();
+        } else if (!event.shiftKey && document.activeElement === proceed) {
+          event.preventDefault();
+          cancel.focus();
+        }
       });
       document.body.appendChild(modal);
+      cancel.focus();
     },
 
     checkGlobalBackBtn() {
@@ -80,4 +142,3 @@ export function createApp() {
     }
   };
 }
-

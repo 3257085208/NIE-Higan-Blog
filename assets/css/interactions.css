@@ -62,7 +62,7 @@
 .ext-modal-content { color:var(--text-sub); font-size:0.95rem; line-height:1.6; margin-bottom:24px; }
 .ext-modal-url { background:var(--tag-bg); padding:10px 12px; border-radius:8px; margin-top:12px; word-break:break-all; font-family:monospace; color:var(--accent); border:1px dashed var(--border); max-height:80px; overflow-y:auto; }
 .ext-modal-actions { display:flex; justify-content:flex-end; gap:12px; }
-.ext-btn { padding:8px 20px; border-radius:50px; font-size:0.95rem; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; outline:none; }
+.ext-btn { padding:8px 20px; border-radius:50px; font-size:0.95rem; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; }
 .ext-btn-cancel { background:transparent; color:var(--text-sub); }
 .ext-btn-cancel:hover { background:var(--tag-bg); color:var(--text); }
 .ext-btn-continue { background:var(--accent); color:#fff; box-shadow:0 4px 12px rgba(0,184,148,0.2); }
@@ -78,7 +78,7 @@
 .status-image-item img:hover { opacity:0.85; }
 .status-lightbox-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:9999999; display:flex; justify-content:center; align-items:center; cursor:zoom-out; opacity:0; animation:statusFadeIn 0.2s forwards; backdrop-filter:blur(5px); }
 .status-lightbox-img { max-width:90vw; max-height:90vh; object-fit:contain; transform:scale(0.9); animation:statusScaleUp 0.2s forwards; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.3); }
-.like-btn { user-select:none; transition:color 0.2s; }
+.like-btn { appearance:none; background:none; border:0; color:inherit; font:inherit; cursor:pointer; user-select:none; transition:color 0.2s; }
 .like-btn:hover,.like-btn.liked { color:#ff4757 !important; }
 .like-btn i { transition:transform 0.2s cubic-bezier(0.175,0.885,0.32,1.275); display:inline-block; }
 .like-btn.liked i { animation:heartPop 0.4s ease-out forwards; }

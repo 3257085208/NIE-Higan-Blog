@@ -1,9 +1,9 @@
-import { $, isArticle } from '../utils.js';
+import { $, isArticle, safeDecodeURIComponent, safeInternalUrl } from '../utils.js';
 
 export function redirectLegacyHashRoutes(state) {
   const raw = location.hash ? location.hash.slice(1) : '';
   if (!raw) return false;
-  const hash = decodeURIComponent(raw);
+  const hash = safeDecodeURIComponent(raw);
   const map = { archive: '/archive/', category: '/category/', status: '/status/', guestbook: '/guestbook/' };
   if (map[hash]) {
     location.replace(map[hash]);
@@ -16,7 +16,7 @@ export function redirectLegacyHashRoutes(state) {
 export function redirectHashPostToCanonical(state) {
   const hash = state._pendingHashPost;
   if (!hash || !state.posts?.length) return;
-  for (const key of [hash, decodeURIComponent(hash)]) {
+  for (const key of new Set([hash, safeDecodeURIComponent(hash)])) {
     const hit = state.posts.find(post =>
       post?.file === key ||
       post?.file?.replace(/\.md$/i, '') === key ||
@@ -24,7 +24,7 @@ export function redirectHashPostToCanonical(state) {
       post?.url?.replace(/\/$/, '') === key.replace(/\/$/, '')
     );
     if (hit?.url) {
-      location.replace(hit.url);
+      location.replace(safeInternalUrl(hit.url));
       break;
     }
   }
@@ -34,7 +34,13 @@ export function redirectHashPostToCanonical(state) {
 export function renderPrevNext(state) {
   const articleView = $('#article-view');
   if (!articleView || !state.posts?.length) return;
-  const normalPosts = state.posts.filter(post => post?.category !== '说说');
+  const normalPosts = state.posts
+    .filter(post => post?.category !== '说说')
+    .sort((left, right) => {
+      const leftKey = `${left?.date || ''}|${left?.slug || ''}`;
+      const rightKey = `${right?.date || ''}|${right?.slug || ''}`;
+      return leftKey === rightKey ? 0 : (leftKey < rightKey ? 1 : -1);
+    });
   if (!normalPosts.length) return;
   const currentPath = location.pathname.replace(/\/$/, '');
   const currentIndex = normalPosts.findIndex(post => post.url?.replace(/\/$/, '') === currentPath);
@@ -70,7 +76,7 @@ export function renderPrevNext(state) {
       return empty;
     }
     const anchor = document.createElement('a');
-    anchor.href = post.url || '/';
+    anchor.href = safeInternalUrl(post.url);
     anchor.className = `nav-item ${klass}`;
     anchor.innerHTML = `<div class="nav-hint">${hint}</div><div class="nav-title"></div>`;
     anchor.querySelector('.nav-title').textContent = post.title || '';
@@ -102,4 +108,3 @@ export function fetchPostsIfNeeded(state, onReady) {
     })
     .catch(error => console.warn('posts.json load failed', error));
 }
-

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import datetime as dt
 import hashlib
 import html
@@ -12,6 +13,7 @@ from pathlib import Path
 import bleach
 import yaml
 from bleach.css_sanitizer import CSSSanitizer
+from bleach.html5lib_shim import Filter
 
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
@@ -20,6 +22,7 @@ PUBLIC_DIR = ROOT / "public"
 ASSETS_DIR = ROOT / "assets"
 TEMPLATE_HTML = (ROOT / "src" / "index.template.html").read_text(encoding="utf-8")
 CONFIG_JSON = json.loads((ROOT / "site.config.json").read_text(encoding="utf-8"))
+POST_SLUGS_JSON = ROOT / "post-slugs.json"
 STANDALONE = ("guestbook.md", "changelog.md", "friends.md")
 PRERENDER = "<!--PRERENDER:START-->", "<!--PRERENDER:END-->"
 
@@ -29,7 +32,7 @@ ALLOWED_TAGS = set(bleach.sanitizer.ALLOWED_TAGS) | {
     "td","tfoot","th","thead","tr","ul",
 }
 ALLOWED_ATTRS = {
-    "alt","checked","class","colspan","dir","disabled","height","hidden","href","id","loading","name","rel",
+    "alt","checked","class","colspan","decoding","dir","disabled","height","hidden","href","id","loading","name","rel",
     "role","rowspan","src","style","tabindex","target","title","type","width"
 }
 CSS_SAN = CSSSanitizer(allowed_css_properties={
@@ -40,6 +43,15 @@ CSS_SAN = CSSSanitizer(allowed_css_properties={
 })
 
 ESC_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+
+
+class ImageLoadingFilter(Filter):
+    def __iter__(self):
+        for token in super().__iter__():
+            if token.get("type") in {"StartTag", "EmptyTag"} and token.get("name") == "img":
+                token["data"][(None, "loading")] = "lazy"
+                token["data"][(None, "decoding")] = "async"
+            yield token
 
 
 def esc(value, quote=False):
@@ -100,14 +112,15 @@ def split_fm(text):
 
 
 def sanitize(text):
-    return bleach.clean(
-        text,
+    cleaner = bleach.Cleaner(
         tags=ALLOWED_TAGS,
         attributes=lambda tag, name, value: name in ALLOWED_ATTRS or name.startswith(("aria-", "data-")),
         protocols=["http", "https", "mailto", "tel", "tencent"],
         css_sanitizer=CSS_SAN,
         strip=True,
+        filters=[ImageLoadingFilter],
     )
+    return cleaner.clean(text)
 
 
 def rfc822(date_string):
@@ -119,7 +132,7 @@ def rfc822(date_string):
 
 
 def load_config():
-    cfg = CONFIG_JSON.copy() if isinstance(CONFIG_JSON, dict) else {}
+    cfg = copy.deepcopy(CONFIG_JSON) if isinstance(CONFIG_JSON, dict) else {}
     site_cfg = cfg.setdefault("site", {})
     if not isinstance(site_cfg, dict):
         cfg["site"] = site_cfg = {}
@@ -129,12 +142,19 @@ def load_config():
     return cfg
 
 
+def load_post_slugs():
+    if not POST_SLUGS_JSON.exists():
+        return {}
+    data = json.loads(POST_SLUGS_JSON.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or not all(isinstance(key, str) and isinstance(value, str) for key, value in data.items()):
+        raise ValueError("post-slugs.json must be an object mapping filenames to slugs")
+    return data
+
+
 def asset_ver():
     digest = hashlib.sha256()
     tracked_files = sorted(path for path in ASSETS_DIR.rglob("*") if path.is_file())
-    template = ROOT / "src" / "index.template.html"
-    if template.exists():
-        tracked_files.append(template)
+    tracked_files.extend((ROOT / "src" / "index.template.html", ROOT / "builder" / "pipeline.py"))
     for file_path in tracked_files:
         try:
             digest.update(file_path.relative_to(ROOT).as_posix().encode("utf-8"))
@@ -142,8 +162,9 @@ def asset_ver():
             digest.update(file_path.read_bytes())
             digest.update(b"\0")
         except OSError:
-            continue
-    return digest.hexdigest()[:12] or str(int(dt.datetime.now().timestamp()))
+            pass
+    return digest.hexdigest()[:16]
+
 
 def render_social(cfg):
     items = cfg.get("social", []) if isinstance(cfg.get("social", []), list) else []
@@ -166,7 +187,7 @@ def site(cfg):
     return cfg.get("site", {}) or {}
 
 
-def site_title(cfg, default="Higan"):
+def site_title(cfg, default="Blog"):
     return str(site(cfg).get("title", default))
 
 

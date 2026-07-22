@@ -1,6 +1,7 @@
-const LIVE2D_SRC = 'https://cdn.jsdelivr.net.i8-mc.cn/npm/live2d-widgets@1.0.0/dist/autoload.js';
+const LIVE2D_SRC = '/assets/vendor/live2d/autoload.js';
 
 function initLive2D() {
+  if (window.matchMedia && window.matchMedia('(max-width:768px)').matches) return;
   if (window.matchMedia && !window.matchMedia('(pointer:fine)').matches) return;
   if (window.__live2d_loaded) return;
   window.__live2d_loaded = 1;
@@ -90,4 +91,3 @@ export function initTemplateRuntime() {
 
   initVisibilityTitle();
 }
-

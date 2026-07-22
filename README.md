@@ -60,6 +60,7 @@ top: 0
 |------|------|
 | `category: 说说` | 进入动态页，不计入首页文章统计 |
 | `top >= 1000` | 显示置顶徽章 |
+| `slug` | 可选永久文章 ID；已有 ID 记录在 `post-slugs.json` |
 | `guestbook.md` / `friends.md` / `changelog.md` | 固定独立页 |
 
 ### Tabs
@@ -87,11 +88,13 @@ top: 0
 
 - `site`：站名、简介、头像、域名等
 - `social`：侧栏 / 首页社交链接
+- `externalLinkWhitelist`：不弹出离站提示的可信域名
+- `integrations`：阅读量与点赞 API；不需要时可留空
 - `waline`：评论服务地址与选项
 
 部署时建议设置环境变量 `SITE_URL`，会覆盖配置里的 `site.url`，保证 canonical / RSS / sitemap 域名正确。
 
-点赞和阅读量默认指向示例 API（`assets/js/utils.js` 里的 `PV_API` / `LIKE_API`）。自己接服务就改这两个常量；不需要的话也可以在前端初始化里关掉。
+点赞和阅读量默认指向示例 API。自己接服务时修改 `site.config.json` 中的 `integrations`；不需要时将对应值留空即可。
 
 ---
 
@@ -135,6 +138,6 @@ python -m unittest discover -s tests -v
 
 ## 说明
 
-示例配置和演示文章只是为了让你 clone 下来就能构建。上线前请换成自己的域名、头像、评论服务和正文。
+示例配置和演示文章只是为了让你 clone 下来就能构建。上线前请换成自己的域名、头像、评论与统计服务和正文。新增文章后同步更新 `post-slugs.json`，CI 会阻止已有 URL 被意外重排。
 
 爱怎么改怎么改，记得留个 star 就行。

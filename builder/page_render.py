@@ -6,6 +6,17 @@ import re
 from .common import canonical_url, esc, render_social, site
 
 
+def json_for_html_script(value):
+    return (
+        json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        .replace("&", r"\u0026")
+        .replace("<", r"\u003c")
+        .replace(">", r"\u003e")
+        .replace("\u2028", r"\u2028")
+        .replace("\u2029", r"\u2029")
+    )
+
+
 def apply_tpl(template, cfg, *, page_title, meta_desc, extra_head, page_type, asset_version):
     site_cfg = site(cfg)
     result = template
@@ -69,7 +80,7 @@ def render_page(template, cfg, *, page_title, meta_desc, page_type, canonical_pa
     if keywords:
         head.append(f'<meta name="keywords" content="{esc(keywords, True)}">')
     if ld is not None:
-        head.append(f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>')
+        head.append(f'<script type="application/ld+json">{json_for_html_script(ld)}</script>')
     html = apply_tpl(
         template,
         cfg,
@@ -80,4 +91,3 @@ def render_page(template, cfg, *, page_title, meta_desc, page_type, canonical_pa
         asset_version=cfg.get("_asset_version", "1"),
     )
     return show_view(html, show_view_id) if show_view_id else html
-

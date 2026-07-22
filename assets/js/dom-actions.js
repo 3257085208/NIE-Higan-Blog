@@ -2,8 +2,13 @@ import { $, $$ } from './utils.js';
 
 export function bindTemplateActions(app) {
   const overlay = $('#overlay');
+  const mobileMenuButton = $('.mobile-menu-btn');
+  const closeMenu = () => {
+    app.toggleMenu(true);
+    mobileMenuButton?.focus();
+  };
   if (overlay) {
-    overlay.addEventListener('click', () => app.toggleMenu(true));
+    overlay.addEventListener('click', closeMenu);
   }
 
   $$('.menu-link').forEach(link => {
@@ -12,22 +17,23 @@ export function bindTemplateActions(app) {
     }
   });
 
-  const brandLink = $('[data-home-link]');
-  if (brandLink) {
-    brandLink.addEventListener('click', () => {
-      location.href = '/';
-    });
-  }
-
   const themeToggle = $('#theme-icon');
   if (themeToggle) {
     themeToggle.addEventListener('click', () => app.toggleTheme());
   }
 
-  const mobileMenuButton = $('.mobile-menu-btn');
   if (mobileMenuButton) {
-    mobileMenuButton.addEventListener('click', () => app.toggleMenu());
+    mobileMenuButton.addEventListener('click', () => {
+      app.toggleMenu();
+      if ($('#sidebar')?.classList.contains('active')) {
+        $('#sidebar .menu-link')?.focus();
+      }
+    });
   }
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && $('#sidebar')?.classList.contains('active')) closeMenu();
+  });
 
   const backButton = $('#float-back-btn');
   if (backButton) {

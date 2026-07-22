@@ -9,7 +9,7 @@ from .page_render import inject_div, render_page, replace_article
 
 def home_post_item(post):
     badge = '<span class="top-badge"><i class="fa-solid fa-fire"></i> 置顶</span>' if as_int(post.get("top")) >= 1000 else ""
-    tags = "".join(f'<span class="tag-pill">#{esc(tag)}</span>' for tag in post.get("tags", []) if isinstance(post.get("tags"), list))
+    tags = "".join(f'<button class="tag-pill tag-filter" type="button">#{esc(tag)}</button>' for tag in post.get("tags", []) if isinstance(post.get("tags"), list))
     tags_html = f'<div class="post-tags">{tags}</div>' if tags else ""
     return (
         f'<div class="post-item"><div class="post-date">{esc(post["date"])}</div>'
@@ -28,31 +28,30 @@ def build_home(template, cfg, posts):
     return html.replace(PRERENDER[0] + "\n" + PRERENDER[1], PRERENDER[0] + "\n" + items + "\n" + PRERENDER[1])
 
 
-
-
 def _fill_span(html, span_id, value):
-    empty = f'<span id="{span_id}"></span>'
-    filled = f'<span id="{span_id}">{esc(value)}</span>'
-    return html.replace(empty, filled, 1)
+    return html.replace(f'<span id="{span_id}"></span>', f'<span id="{span_id}">{esc(value)}</span>', 1)
 
 
 def _build_prev_next(posts, current):
-    """Same DOM as assets/js/features/navigation.js renderPrevNext."""
-    normal = [p for p in posts if p.get("category") != "说说"]
+    normal = sorted(
+        [post for post in posts if post.get("category") != "说说"],
+        key=lambda item: (item.get("date", ""), item.get("slug", "")),
+        reverse=True,
+    )
     try:
-        idx = next(i for i, p in enumerate(normal) if p.get("url") == current.get("url"))
+        index = next(i for i, post in enumerate(normal) if post.get("url") == current.get("url"))
     except StopIteration:
         return ""
-    newer = normal[idx - 1] if idx > 0 else None
-    older = normal[idx + 1] if idx < len(normal) - 1 else None
+    newer = normal[index - 1] if index > 0 else None
+    older = normal[index + 1] if index < len(normal) - 1 else None
     if not newer and not older:
         return ""
 
-    def item(post, klass, hint):
+    def item(post, css_class, hint):
         if not post:
             return '<div class="nav-item empty"></div>'
         return (
-            f'<a href="{esc(post.get("url") or "/", True)}" class="nav-item {klass}">'
+            f'<a href="{esc(post.get("url") or "/", True)}" class="nav-item {css_class}">'
             f'<div class="nav-hint">{hint}</div>'
             f'<div class="nav-title">{esc(post.get("title") or "")}</div></a>'
         )
@@ -67,7 +66,7 @@ def _build_prev_next(posts, current):
 
 def build_post(template, cfg, post, page_type="post", all_posts=None):
     site_cfg = site(cfg)
-    title = str(site_cfg.get("title", "Higan"))
+    title = str(site_cfg.get("title", "Blog"))
     page_title = f"{post['title']} | {title}"
     meta_desc = str(post.get("summary", "")).strip() or str(site_cfg.get("description", ""))
     keywords = ",".join(str(tag) for tag in post.get("tags", []) if isinstance(post.get("tags"), list))
@@ -103,21 +102,17 @@ def build_post(template, cfg, post, page_type="post", all_posts=None):
     html = _fill_span(html, "article-category", post.get("category") or "默认")
     tags = post.get("tags", []) if isinstance(post.get("tags"), list) else []
     if tags:
-        html = _fill_span(html, "article-tags", ", ".join(str(t) for t in tags))
+        html = _fill_span(html, "article-tags", ", ".join(str(tag) for tag in tags))
     html = _fill_span(html, "article-words", str(post.get("word_count") or 0))
-    like_id = str(post.get("url") or "") or str(post.get("file") or "")
-    html = html.replace(
-        'class="like-btn" id="article-like-btn" style="cursor:pointer"',
-        f'class="like-btn" id="article-like-btn" data-id="{esc(like_id, True)}" style="cursor:pointer"',
-        1,
-    )
-    body_html = md_to_html(post.get("_raw_body", ""))
+    like_id = str(post.get("url") or post.get("file") or "")
+    html = html.replace('id="article-like-btn"', f'id="article-like-btn" data-id="{esc(like_id, True)}"', 1)
+    body_html = md_to_html(post.get("_raw_body", ""), id_prefix=post.get("slug") or page_type)
     html = html.replace(
         '<article id="article-content" class="markdown-body"></article>',
         f'<article id="article-content" class="markdown-body">{body_html}</article>',
         1,
     )
-    if all_posts is not None and page_type == "post":
+    if all_posts is not None and page_type == "post" and post.get("category") != "说说":
         nav = _build_prev_next(all_posts, post)
         if nav:
             marker = f'<article id="article-content" class="markdown-body">{body_html}</article>'
@@ -155,19 +150,19 @@ def build_status_block(cfg, posts):
         return '<div style="color:#999">暂无动态...</div>'
     parts = []
     for post in status_posts:
-        file_name = str(post.get("file", ""))
+        like_id = str(post.get("url") or post.get("file") or "")
         parts.append(
             "\n".join(
                 [
                     '<div class="status-item">',
-                    f'  <img src="{esc(site_cfg.get("avatar", ""), True)}" class="status-avatar">',
+                    f'  <img src="{esc(site_cfg.get("avatar", ""), True)}" class="status-avatar" alt="" loading="lazy" decoding="async">',
                     '  <div class="status-main"><div class="status-header">',
                     f'      <span class="status-name">{esc(site_cfg.get("statusName") or site_cfg.get("title", ""))}</span>',
                     f'      <span class="status-time">{esc(post.get("date", ""))}</span>',
                     '    </div>',
-                    f'    <div class="status-card markdown-body">{md_to_html(post.get("_raw_body", ""))}</div>',
+                    f'    <div class="status-card markdown-body">{md_to_html(post.get("_raw_body", ""), id_prefix=post.get("slug") or "status")}</div>',
                     '    <div class="status-actions">',
-                    f'      <span class="status-btn like-btn" data-id="{esc(file_name)}"><i class="fa-regular fa-heart"></i> <span class="like-count">0</span></span>',
+                    f'      <button class="status-btn like-btn" type="button" data-id="{esc(like_id, True)}" aria-pressed="false" aria-label="点赞"><i class="fa-regular fa-heart"></i> <span class="like-count">0</span></button>',
                     f'      <a href="{esc(post.get("url", ""), True)}" class="status-btn" style="text-decoration:none;"><i class="fa-regular fa-comment-dots"></i> 评论</a>',
                     '    </div></div></div>',
                 ]
@@ -229,7 +224,7 @@ def build_friends(template, cfg):
             continue
         cards.append(
             f'<a href="{esc(friend.get("url", "#"), True)}" target="_blank" rel="noopener noreferrer" class="friend-card">'
-            f'<img src="{esc(friend.get("avatar", ""), True)}" class="friend-avatar" alt="{esc(friend.get("name", "未命名"))}">'
+            f'<img src="{esc(friend.get("avatar", ""), True)}" class="friend-avatar" alt="{esc(friend.get("name", "未命名"), True)}" loading="lazy" decoding="async">'
             f'<div class="friend-info"><div class="friend-name">{esc(friend.get("name", "未命名"))}</div>'
             f'<div class="friend-desc">{esc(friend.get("bio", ""))}</div></div></a>'
         )
@@ -239,10 +234,10 @@ def build_friends(template, cfg):
 
 def build_404(cfg):
     site_cfg = site(cfg)
-    title = esc(site_cfg.get("title", "Higan"))
+    title = esc(site_cfg.get("title", "Blog"))
     desc = esc(site_cfg.get("description", ""))
-    favicon = esc(site_cfg.get("favicon", ""))
+    favicon = esc(site_cfg.get("favicon", ""), True)
+    version = esc(cfg.get("_asset_version", "1"), True)
     return (
-        f'<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>404 - {title}</title><link rel="shortcut icon" href="{favicon}"><link rel="stylesheet" href="/assets/app.css"></head><body><div style="text-align:center;padding:100px 20px;"><h1 style="font-size:8rem;color:var(--accent);">404</h1><h2>页面走丢了</h2><p>{desc}</p><a href="/" style="display:inline-block;margin-top:30px;padding:12px 28px;background:var(--tag-bg);border-radius:12px;font-weight:800;text-decoration:none;">返回首页</a></div></body></html>'
+        f'<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>404 - {title}</title><link rel="shortcut icon" href="{favicon}"><link rel="stylesheet" href="/assets/app.css?v={version}"></head><body><main style="text-align:center;padding:100px 20px;"><h1 style="font-size:8rem;color:var(--accent);">404</h1><h2>页面走丢了</h2><p>{desc}</p><a href="/" style="display:inline-block;margin-top:30px;padding:12px 28px;background:var(--tag-bg);border-radius:12px;font-weight:800;text-decoration:none;">返回首页</a></main><script src="/assets/legacy-redirect.js?v={version}" defer></script></body></html>'
     )
-

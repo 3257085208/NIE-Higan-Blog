@@ -1,19 +1,50 @@
-# 静态资源：缓存 7 天
-/assets/*
-  Cache-Control: public, max-age=604800
-
-# 图片/字体：缓存 30 天（如果你改得不频繁可以更长）
-/*.png
-  Cache-Control: public, max-age=2592000
-/*.jpg
-  Cache-Control: public, max-age=2592000
-/*.jpeg
-  Cache-Control: public, max-age=2592000
-/*.webp
-  Cache-Control: public, max-age=2592000
-/*.woff2
-  Cache-Control: public, max-age=2592000
-
-# HTML：浏览器不强缓存，但允许边缘缓存 1 小时 + 过期先用旧的再后台更新
 /*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://waline.example.com; script-src 'self' https://cubism.live2d.com; style-src 'self' 'unsafe-inline' https://cdn.staticfile.org.i8-mc.cn; font-src 'self' data: https://cdn.staticfile.org.i8-mc.cn; img-src 'self' data: blob: https:; connect-src 'self' https://example.com https://api.example.com https://waline.example.com https://fastly.jsdelivr.net https://cubism.live2d.com; media-src 'self' blob: https:; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/assets/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/p/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/archive/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/category/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/status/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/guestbook/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/friends/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/changelog/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
+
+/404.html
+  Cache-Control: public, max-age=0, s-maxage=300
+
+/posts.json
+  Cache-Control: public, max-age=0, s-maxage=300, stale-while-revalidate=3600
+/redirects.json
+  Cache-Control: public, max-age=0, s-maxage=300, stale-while-revalidate=3600
+/config.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.xml
+  Cache-Control: public, max-age=0, s-maxage=300, stale-while-revalidate=3600
+
+/robots.txt
+  Cache-Control: public, max-age=0, s-maxage=300

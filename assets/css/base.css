@@ -1,6 +1,14 @@
+@font-face {
+    font-family:'Nunito';
+    font-style:normal;
+    font-weight:400 900;
+    font-display:swap;
+    src:url('/assets/fonts/nunito-latin.woff2') format('woff2');
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 :root {
-    --bg: #ffffff; --text: #50616d; --text-sub: #9aa5b1; --accent: #42b983;
-    --border: #f0f2f5; --menu-bg: rgba(255,255,255,0.98); --tag-bg: #f8fafc;
+    --bg: #ffffff; --text: #50616d; --text-sub: #607084; --accent: #167a57;
+    --border: #dfe5ea; --menu-bg: rgba(255,255,255,0.98); --tag-bg: #f4f7f9;
     --float-btn-bg: #ffffff; --status-bg: #f7f9fa;
 }
 [data-theme="dark"] {
@@ -21,6 +29,7 @@
 [data-theme="dark"] .markdown-body blockquote { border-left-color:var(--accent); background:rgba(45,55,72,0.5); }
 [data-theme="dark"] .markdown-body img { opacity:0.92; }
 * { margin:0; padding:0; box-sizing:border-box; }
+button, input { font:inherit; }
 html, body { background:var(--bg); }
 html, body { background-color:#fff !important; }
 html[data-theme="dark"], html[data-theme="dark"] body { background-color:#1a202c !important; }
@@ -32,9 +41,11 @@ body {
 }
 a { text-decoration:none; color:inherit; }
 .hidden { display:none !important; }
+.sr-only { position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important; }
+.skip-link { position:fixed; top:12px; left:12px; z-index:1000000; padding:10px 14px; background:var(--bg); color:var(--text); border:2px solid var(--accent); border-radius:6px; transform:translateY(-160%); }
+.skip-link:focus { transform:translateY(0); }
 .icon-button {
     border:0;
-    outline:none;
     background:none;
     box-shadow:none;
     padding:0;
@@ -50,4 +61,11 @@ a { text-decoration:none; color:inherit; }
     appearance:none;
     -webkit-appearance:none;
     -moz-appearance:none;
+}
+.icon-button:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, [role="button"]:focus-visible {
+    outline:3px solid var(--accent);
+    outline-offset:3px;
+}
+@media (prefers-reduced-motion:reduce) {
+    *, *::before, *::after { scroll-behavior:auto !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
 }

@@ -25,6 +25,13 @@
       "iconClass": "fa-brands fa-github"
     }
   ],
+  "externalLinkWhitelist": [
+    "example.com"
+  ],
+  "integrations": {
+    "pvApi": "https://api.example.com/api/pv",
+    "likeApi": "https://api.example.com/api/like"
+  },
   "waline": {
     "serverURL": "https://waline.example.com",
     "emoji": [

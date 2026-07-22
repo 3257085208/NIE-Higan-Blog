@@ -35,10 +35,12 @@ export function initBackgroundSwitcher() {
   const group = $('#float-btn-group');
   if (!group || $('#float-bottom-btn')) return;
 
-  const bottomBtn = document.createElement('div');
+  const bottomBtn = document.createElement('button');
   bottomBtn.id = 'float-bottom-btn';
-  bottomBtn.className = 'float-btn';
+  bottomBtn.className = 'float-btn icon-button';
+  bottomBtn.type = 'button';
   bottomBtn.title = '直达底部';
+  bottomBtn.setAttribute('aria-label', '直达底部');
   bottomBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
   bottomBtn.addEventListener('click', () => {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
@@ -74,6 +76,12 @@ export function toggleMenu(state, forceClose = false) {
   const overlay = $('#overlay');
   if (!sidebar || !overlay) return;
   const willOpen = forceClose ? false : !sidebar.classList.contains('active');
+  const menuButton = $('.mobile-menu-btn');
+  if (menuButton) {
+    menuButton.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    menuButton.setAttribute('aria-label', willOpen ? '关闭菜单' : '打开菜单');
+  }
+  sidebar.setAttribute('aria-hidden', willOpen ? 'false' : 'true');
   if (willOpen) {
     state._menuScrollY = window.scrollY;
     document.body.classList.add('menu-open');
@@ -117,8 +125,10 @@ export function startTimer() {
   const start = new Date(SITE.uptimeStart || '2026-01-21').getTime();
   const el = $('#uptime');
   if (!el || !start) return;
-  setInterval(() => {
+  const update = () => {
     el.innerText = Math.floor((Date.now() - start) / 86400000);
-  }, 1000);
+  };
+  update();
+  setInterval(update, 60000);
 }
 
