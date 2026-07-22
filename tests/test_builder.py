@@ -54,6 +54,13 @@ class BuilderTests(unittest.TestCase):
                 {"a.md": "same", "b.md": "same"},
             )
 
+    def test_front_matter_cannot_override_persisted_slug(self):
+        posts = [{"date": "2026-02-01", "file": "a.md", "slug": "renamed"}]
+        with self.assertRaises(ValueError):
+            assign_post_urls(posts, {"a.md": "published"})
+        assign_post_urls(posts, {"a.md": "renamed"})
+        self.assertEqual(posts[0]["url"], "/p/renamed/")
+
     def test_slug_map_covers_every_current_post(self):
         posts = load_posts()
         slug_map = common.load_post_slugs()

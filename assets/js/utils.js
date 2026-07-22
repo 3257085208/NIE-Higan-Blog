@@ -7,6 +7,17 @@ export const LIKE_API = String(INTEGRATIONS.likeApi || '');
 export const safeParse = (value, fallback) => {
   try { return JSON.parse(value); } catch { return fallback; }
 };
+export const storageGet = (key, fallback = '') => {
+  try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
+};
+export const storageSet = (key, value) => {
+  try {
+    localStorage.setItem(key, String(value));
+    return true;
+  } catch {
+    return false;
+  }
+};
 export function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')

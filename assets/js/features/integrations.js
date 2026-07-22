@@ -1,4 +1,4 @@
-import { CFG, LIKE_API, PV_API, SITE, $, $$, isArticle, loadCSSOnce, importOnce, safeParse } from '../utils.js';
+import { CFG, LIKE_API, PV_API, SITE, $, $$, isArticle, loadCSSOnce, importOnce, safeParse, storageGet, storageSet } from '../utils.js';
 
 export function initExternalLinkChecker(app) {
   const configured = Array.isArray(CFG.externalLinkWhitelist) ? CFG.externalLinkWhitelist : [];
@@ -37,7 +37,7 @@ export function initExternalLinkChecker(app) {
 
 export function initLikes() {
   if (!LIKE_API) return;
-  let local = safeParse(localStorage.getItem('nie_likes') || '[]', []);
+  let local = safeParse(storageGet('nie_likes', '[]'), []);
   if (!Array.isArray(local)) local = [];
 
   const bind = () => {
@@ -77,7 +77,7 @@ export function initLikes() {
           if (icon) icon.className = liked ? 'fa-regular fa-heart' : 'fa-solid fa-heart';
           if (countEl) countEl.innerText = data.likes || 0;
           local = liked ? local.filter(item => item !== id) : [...new Set([...local, id])];
-          localStorage.setItem('nie_likes', JSON.stringify(local));
+          storageSet('nie_likes', JSON.stringify(local));
         } catch (error) {
           console.warn('Like update failed', error);
         } finally {

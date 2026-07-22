@@ -1,13 +1,13 @@
-import { SITE, $, applyTheme, isArticle } from '../utils.js';
+import { SITE, $, applyTheme, isArticle, storageGet, storageSet } from '../utils.js';
 
 export function loadTheme() {
-  applyTheme(localStorage.getItem('theme') || 'light');
+  applyTheme(storageGet('theme', 'light'));
 }
 
 export function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme') || localStorage.getItem('theme') || 'light';
+  const current = document.documentElement.getAttribute('data-theme') || storageGet('theme', 'light');
   const next = current === 'light' ? 'dark' : 'light';
-  localStorage.setItem('theme', next);
+  storageSet('theme', next);
   applyTheme(next);
   const icon = $('#theme-icon');
   if (icon) {
@@ -30,7 +30,8 @@ export function checkGlobalBackBtn(state) {
 }
 
 export function initBackgroundSwitcher() {
-  const saved = localStorage.getItem('site-bg') || 'none';
+  const stored = storageGet('site-bg', 'none');
+  const saved = ['none', 'grid', 'dots'].includes(stored) ? stored : 'none';
   document.body.setAttribute('data-bg', saved);
   const group = $('#float-btn-group');
   if (!group || $('#float-bottom-btn')) return;
@@ -62,7 +63,7 @@ export function initBackgroundSwitcher() {
     button.innerHTML = `<i class="${bg.icon}"></i>`;
     button.addEventListener('click', () => {
       document.body.setAttribute('data-bg', bg.id);
-      localStorage.setItem('site-bg', bg.id);
+      storageSet('site-bg', bg.id);
       wrap.querySelectorAll('.bg-switch-btn').forEach(item => item.classList.remove('active'));
       button.classList.add('active');
     });
@@ -131,4 +132,3 @@ export function startTimer() {
   update();
   setInterval(update, 60000);
 }
-

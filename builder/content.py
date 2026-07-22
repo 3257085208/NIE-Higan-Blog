@@ -43,7 +43,14 @@ def assign_post_urls(posts, persisted=None):
     persisted = persisted or {}
     used = {}
     for post in posts:
-        slug = str(post.get("slug") or persisted.get(post.get("file", ""), "")).strip()
+        file_name = post.get("file", "")
+        front_matter_slug = str(post.get("slug") or "").strip()
+        persisted_slug = str(persisted.get(file_name, "") or "").strip()
+        if front_matter_slug and persisted_slug and front_matter_slug != persisted_slug:
+            raise ValueError(
+                f"{file_name}: front matter slug {front_matter_slug!r} conflicts with persisted slug {persisted_slug!r}"
+            )
+        slug = persisted_slug or front_matter_slug
         if not slug:
             raise ValueError(f"{post.get('file', 'unknown post')}: missing permanent slug")
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", slug):
